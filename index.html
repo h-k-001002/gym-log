@@ -14,30 +14,47 @@
 </head>
 <body>
 <header class="app-header">
-  <h1>筋トレ記録</h1>
+  <h1>🏋️ 筋トレ記録</h1>
 </header>
 
-<main>
-  <form id="record-form" class="record-form">
-    <div class="field">
-      <label for="exercise">種目</label>
-      <select id="exercise" required></select>
-      <input type="text" id="exercise-custom" class="hidden" placeholder="種目名を入力" autocomplete="off">
-    </div>
-    <div class="field-row">
-      <div class="field">
-        <label for="weight">重量 (kg)</label>
-        <input type="number" id="weight" inputmode="decimal" step="0.5" min="0" placeholder="60">
-      </div>
-      <div class="field">
-        <label for="reps">回数</label>
-        <input type="number" id="reps" inputmode="numeric" step="1" min="0" placeholder="10">
-      </div>
-    </div>
-    <button type="submit" class="btn-primary">追加</button>
-  </form>
+<nav class="tabs">
+  <button type="button" class="tab-btn active" data-tab="log">📋 記録</button>
+  <button type="button" class="tab-btn" data-tab="trend">📈 推移</button>
+</nav>
 
-  <section id="history" class="history"></section>
+<main>
+  <section id="tab-log" class="tab-panel">
+    <form id="record-form" class="record-form">
+      <div class="field">
+        <label for="exercise">種目</label>
+        <select id="exercise" required></select>
+        <input type="text" id="exercise-custom" class="hidden" placeholder="種目名を入力" autocomplete="off">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="weight">重量 (kg)</label>
+          <input type="number" id="weight" inputmode="decimal" step="0.5" min="0" placeholder="60">
+        </div>
+        <div class="field">
+          <label for="reps">回数</label>
+          <input type="number" id="reps" inputmode="numeric" step="1" min="0" placeholder="10">
+        </div>
+      </div>
+      <button type="submit" class="btn-primary">＋ 追加</button>
+    </form>
+
+    <section id="history" class="history"></section>
+  </section>
+
+  <section id="tab-trend" class="tab-panel hidden">
+    <div class="record-form">
+      <div class="field">
+        <label for="trend-exercise">種目を選択</label>
+        <select id="trend-exercise"></select>
+      </div>
+    </div>
+    <div id="trend-content"></div>
+  </section>
 </main>
 
 <template id="day-group-template">
@@ -50,11 +67,32 @@
 <template id="entry-template">
   <li class="entry">
     <div class="entry-main">
-      <span class="entry-exercise"></span>
-      <span class="entry-detail"></span>
+      <span class="category-badge"></span>
+      <div class="entry-text">
+        <span class="entry-exercise"></span>
+        <span class="entry-chips"></span>
+      </div>
     </div>
     <button type="button" class="btn-delete" aria-label="削除">×</button>
   </li>
+</template>
+
+<template id="trend-entry-template">
+  <li class="entry">
+    <div class="entry-main">
+      <div class="entry-text">
+        <span class="entry-exercise"></span>
+        <span class="entry-chips"></span>
+      </div>
+    </div>
+  </li>
+</template>
+
+<template id="stat-card-template">
+  <div class="stat-card">
+    <span class="stat-label"></span>
+    <span class="stat-value"></span>
+  </div>
 </template>
 
 <script src="js/app.js"></script>

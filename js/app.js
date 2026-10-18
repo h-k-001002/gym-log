@@ -1,10 +1,39 @@
 const STORAGE_KEY = "gym-log-entries";
+const CUSTOM_KEY = "gym-log-custom-exercises";
+const CUSTOM_VALUE = "__custom__";
+
+const EXERCISE_GROUPS = [
+  {
+    label: "胸",
+    items: ["ベンチプレス", "チェストプレス（マシン）", "チェストフライ（マシン）", "チェストフライ（チューブマシン）", "インクラインベンチプレス", "ディップスマシン"],
+  },
+  {
+    label: "背中",
+    items: ["ラットプルダウン", "ラットプルダウン（チューブマシン）", "ローロー", "ケーブルロー", "アシストプルアップマシン", "バックエクステンション"],
+  },
+  {
+    label: "脚",
+    items: ["レッグプレス", "レッグエクステンション", "レッグカール", "スクワット", "アブダクション（外転）", "アダクション（内転）", "カーフレイズ"],
+  },
+  {
+    label: "肩",
+    items: ["ショルダープレス（マシン）", "サイドレイズマシン", "リアデルトフライ"],
+  },
+  {
+    label: "腕",
+    items: ["ダンベルカール", "アームカール（マシン）", "トライセプスプレスダウン", "トライセプスエクステンション"],
+  },
+  {
+    label: "体幹",
+    items: ["腹筋（マシン）", "腹筋（腹筋ローラー）", "アブドミナルクランチ", "プランク"],
+  },
+];
 
 const form = document.getElementById("record-form");
-const exerciseInput = document.getElementById("exercise");
+const exerciseSelect = document.getElementById("exercise");
+const exerciseCustomInput = document.getElementById("exercise-custom");
 const weightInput = document.getElementById("weight");
 const repsInput = document.getElementById("reps");
-const exerciseOptions = document.getElementById("exercise-options");
 const history = document.getElementById("history");
 const dayGroupTemplate = document.getElementById("day-group-template");
 const entryTemplate = document.getElementById("entry-template");
@@ -21,23 +50,72 @@ function saveEntries(entries) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
 }
 
+function loadCustomExercises() {
+  try {
+    return JSON.parse(localStorage.getItem(CUSTOM_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveCustomExercises(names) {
+  localStorage.setItem(CUSTOM_KEY, JSON.stringify(names));
+}
+
+function allPresetExerciseNames() {
+  return EXERCISE_GROUPS.flatMap((g) => g.items);
+}
+
+function buildExerciseOptions() {
+  const preset = new Set(allPresetExerciseNames());
+  const customNames = loadCustomExercises().filter((name) => !preset.has(name));
+
+  exerciseSelect.innerHTML = "";
+
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = "選択してください";
+  placeholder.disabled = true;
+  placeholder.selected = true;
+  exerciseSelect.appendChild(placeholder);
+
+  for (const group of EXERCISE_GROUPS) {
+    const optgroup = document.createElement("optgroup");
+    optgroup.label = group.label;
+    for (const name of group.items) {
+      const option = document.createElement("option");
+      option.value = name;
+      option.textContent = name;
+      optgroup.appendChild(option);
+    }
+    exerciseSelect.appendChild(optgroup);
+  }
+
+  if (customNames.length > 0) {
+    const optgroup = document.createElement("optgroup");
+    optgroup.label = "よく使う（自分で追加した種目）";
+    for (const name of customNames) {
+      const option = document.createElement("option");
+      option.value = name;
+      option.textContent = name;
+      optgroup.appendChild(option);
+    }
+    exerciseSelect.appendChild(optgroup);
+  }
+
+  const otherGroup = document.createElement("optgroup");
+  otherGroup.label = "その他";
+  const customOption = document.createElement("option");
+  customOption.value = CUSTOM_VALUE;
+  customOption.textContent = "＋ 自由入力で追加";
+  otherGroup.appendChild(customOption);
+  exerciseSelect.appendChild(otherGroup);
+}
+
 function formatDate(isoDate) {
   const d = new Date(isoDate + "T00:00:00");
   const days = ["日", "月", "火", "水", "木", "金", "土"];
   return `${d.getMonth() + 1}月${d.getDate()}日(${days[d.getDay()]})`;
-}
-
-function renderExerciseOptions(entries) {
-  const names = [...new Set(entries.map((e) => e.exercise))];
-  exerciseOptions.innerHTML = names
-    .map((name) => `<option value="${escapeHtml(name)}"></option>`)
-    .join("");
-}
-
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
 }
 
 function entryDetailText(entry) {
@@ -49,7 +127,6 @@ function entryDetailText(entry) {
 
 function render() {
   const entries = loadEntries();
-  renderExerciseOptions(entries);
 
   history.innerHTML = "";
 
@@ -95,10 +172,20 @@ function deleteEntry(id) {
   render();
 }
 
+exerciseSelect.addEventListener("change", () => {
+  const isCustom = exerciseSelect.value === CUSTOM_VALUE;
+  exerciseCustomInput.classList.toggle("hidden", !isCustom);
+  exerciseCustomInput.required = isCustom;
+  if (isCustom) {
+    exerciseCustomInput.focus();
+  }
+});
+
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const exercise = exerciseInput.value.trim();
+  const isCustom = exerciseSelect.value === CUSTOM_VALUE;
+  const exercise = isCustom ? exerciseCustomInput.value.trim() : exerciseSelect.value;
   if (!exercise) return;
 
   const weight = weightInput.value === "" ? null : Number(weightInput.value);
@@ -118,13 +205,26 @@ form.addEventListener("submit", (e) => {
   entries.push(entry);
   saveEntries(entries);
 
+  if (isCustom && !allPresetExerciseNames().includes(exercise)) {
+    const customNames = loadCustomExercises();
+    if (!customNames.includes(exercise)) {
+      customNames.push(exercise);
+      saveCustomExercises(customNames);
+    }
+  }
+
+  buildExerciseOptions();
+  exerciseSelect.value = "";
+  exerciseCustomInput.value = "";
+  exerciseCustomInput.classList.add("hidden");
+  exerciseCustomInput.required = false;
   weightInput.value = "";
   repsInput.value = "";
-  exerciseInput.focus();
 
   render();
 });
 
+buildExerciseOptions();
 render();
 
 if ("serviceWorker" in navigator) {

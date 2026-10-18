@@ -52,7 +52,8 @@ main {
   color: #9ca3af;
 }
 
-.field input {
+.field input,
+.field select {
   background: #111827;
   border: 1px solid #374151;
   border-radius: 8px;
@@ -61,9 +62,14 @@ main {
   color: #f3f4f6;
 }
 
-.field input:focus {
+.field input:focus,
+.field select:focus {
   outline: none;
   border-color: #f97316;
+}
+
+.hidden {
+  display: none;
 }
 
 .field-row {

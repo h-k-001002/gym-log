@@ -21,8 +21,8 @@
   <form id="record-form" class="record-form">
     <div class="field">
       <label for="exercise">種目</label>
-      <input type="text" id="exercise" list="exercise-options" placeholder="例: ベンチプレス" autocomplete="off" required>
-      <datalist id="exercise-options"></datalist>
+      <select id="exercise" required></select>
+      <input type="text" id="exercise-custom" class="hidden" placeholder="種目名を入力" autocomplete="off">
     </div>
     <div class="field-row">
       <div class="field">

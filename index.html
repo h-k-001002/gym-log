@@ -30,6 +30,10 @@
         <select id="exercise" required></select>
         <input type="text" id="exercise-custom" class="hidden" placeholder="種目名を入力" autocomplete="off">
       </div>
+      <div class="field">
+        <label for="entry-date">日付</label>
+        <input type="date" id="entry-date" required>
+      </div>
       <div class="field-row">
         <div class="field">
           <label for="weight">重量 (kg)</label>
@@ -38,6 +42,10 @@
         <div class="field">
           <label for="reps">回数</label>
           <input type="number" id="reps" inputmode="numeric" step="1" min="0" placeholder="10">
+        </div>
+        <div class="field">
+          <label for="sets">セット数</label>
+          <input type="number" id="sets" inputmode="numeric" step="1" min="0" placeholder="3">
         </div>
       </div>
       <button type="submit" class="btn-primary">＋ 追加</button>

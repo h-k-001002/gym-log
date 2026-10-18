@@ -222,6 +222,11 @@ main {
   color: #b45309;
 }
 
+.chip-sets {
+  background: #dcfce7;
+  color: #15803d;
+}
+
 .btn-delete {
   background: none;
   border: none;

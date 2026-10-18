@@ -52,8 +52,10 @@ const OTHER_CATEGORY = { label: "その他", emoji: "⭐", badgeBg: "#e2e8f0", b
 const form = document.getElementById("record-form");
 const exerciseSelect = document.getElementById("exercise");
 const exerciseCustomInput = document.getElementById("exercise-custom");
+const dateInput = document.getElementById("entry-date");
 const weightInput = document.getElementById("weight");
 const repsInput = document.getElementById("reps");
+const setsInput = document.getElementById("sets");
 const history = document.getElementById("history");
 const dayGroupTemplate = document.getElementById("day-group-template");
 const entryTemplate = document.getElementById("entry-template");
@@ -152,10 +154,23 @@ function formatDate(isoDate) {
   return `${d.getMonth() + 1}月${d.getDate()}日(${days[d.getDay()]})`;
 }
 
+function todayDateValue() {
+  const d = new Date();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${month}-${day}`;
+}
+
+function compareEntries(a, b) {
+  if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+  return a.timestamp - b.timestamp;
+}
+
 function entryDetailText(entry) {
   const parts = [];
   if (entry.weight !== null) parts.push(`${entry.weight}kg`);
   if (entry.reps !== null) parts.push(`${entry.reps}回`);
+  if (entry.sets !== null) parts.push(`${entry.sets}セット`);
   return parts.join(" × ") || "-";
 }
 
@@ -176,7 +191,14 @@ function appendChips(container, entry) {
     container.appendChild(chip);
   }
 
-  if (entry.weight === null && entry.reps === null) {
+  if (entry.sets !== null) {
+    const chip = document.createElement("span");
+    chip.className = "chip chip-sets";
+    chip.textContent = `${entry.sets}セット`;
+    container.appendChild(chip);
+  }
+
+  if (entry.weight === null && entry.reps === null && entry.sets === null) {
     const chip = document.createElement("span");
     chip.className = "chip";
     chip.style.background = "#e2e8f0";
@@ -235,11 +257,11 @@ function distinctExercisesByRecency(entries) {
   const latestByName = new Map();
   for (const entry of entries) {
     const current = latestByName.get(entry.exercise);
-    if (current === undefined || current < entry.timestamp) {
-      latestByName.set(entry.exercise, entry.timestamp);
+    if (current === undefined || compareEntries(current, entry) < 0) {
+      latestByName.set(entry.exercise, entry);
     }
   }
-  return [...latestByName.entries()].sort((a, b) => b[1] - a[1]).map(([name]) => name);
+  return [...latestByName.entries()].sort((a, b) => compareEntries(b[1], a[1])).map(([name]) => name);
 }
 
 function buildTrendExerciseOptions() {
@@ -359,7 +381,7 @@ function renderTrend() {
 
   const entries = loadEntries()
     .filter((e) => e.exercise === name)
-    .sort((a, b) => a.timestamp - b.timestamp);
+    .sort(compareEntries);
 
   const statsRow = document.createElement("div");
   statsRow.className = "stats-row";
@@ -389,7 +411,7 @@ function renderTrend() {
 
   const list = document.createElement("ul");
   list.className = "entry-list";
-  const sortedDesc = entries.slice().sort((a, b) => b.timestamp - a.timestamp);
+  const sortedDesc = entries.slice().sort((a, b) => compareEntries(b, a));
   for (const entry of sortedDesc) {
     const item = trendEntryTemplate.content.cloneNode(true);
     item.querySelector(".entry-exercise").textContent = formatDate(entry.date);
@@ -440,6 +462,7 @@ form.addEventListener("submit", (e) => {
 
   const weight = weightInput.value === "" ? null : Number(weightInput.value);
   const reps = repsInput.value === "" ? null : Number(repsInput.value);
+  const sets = setsInput.value === "" ? null : Number(setsInput.value);
 
   const now = new Date();
   const entry = {
@@ -447,7 +470,8 @@ form.addEventListener("submit", (e) => {
     exercise,
     weight,
     reps,
-    date: now.toISOString().slice(0, 10),
+    sets,
+    date: dateInput.value,
     timestamp: now.getTime(),
   };
 
@@ -470,10 +494,12 @@ form.addEventListener("submit", (e) => {
   exerciseCustomInput.required = false;
   weightInput.value = "";
   repsInput.value = "";
+  setsInput.value = "";
 
   refreshViews();
 });
 
+dateInput.value = todayDateValue();
 buildExerciseOptions();
 refreshViews();
 

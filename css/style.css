@@ -3,8 +3,8 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: #111827;
-  color: #f3f4f6;
+  background: #eff6ff;
+  color: #1e293b;
   font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
 }
 
@@ -14,14 +14,15 @@ body {
 
 .app-header {
   padding: calc(16px + env(safe-area-inset-top)) 20px 12px;
-  background: #1f2937;
-  border-bottom: 1px solid #374151;
+  background: #2563eb;
+  border-bottom: 1px solid #1d4ed8;
 }
 
 .app-header h1 {
   margin: 0;
   font-size: 20px;
   font-weight: 700;
+  color: #ffffff;
 }
 
 main {
@@ -31,13 +32,15 @@ main {
 }
 
 .record-form {
-  background: #1f2937;
+  background: #ffffff;
+  border: 1px solid #dbeafe;
   border-radius: 12px;
   padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.08);
 }
 
 .field {
@@ -49,23 +52,24 @@ main {
 
 .field label {
   font-size: 13px;
-  color: #9ca3af;
+  color: #64748b;
 }
 
 .field input,
 .field select {
-  background: #111827;
-  border: 1px solid #374151;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
   border-radius: 8px;
   padding: 12px;
   font-size: 16px;
-  color: #f3f4f6;
+  color: #1e293b;
 }
 
 .field input:focus,
 .field select:focus {
   outline: none;
-  border-color: #f97316;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .hidden {
@@ -78,8 +82,8 @@ main {
 }
 
 .btn-primary {
-  background: #f97316;
-  color: #111827;
+  background: #2563eb;
+  color: #ffffff;
   border: none;
   border-radius: 8px;
   padding: 14px;
@@ -89,7 +93,7 @@ main {
 }
 
 .btn-primary:active {
-  background: #ea580c;
+  background: #1d4ed8;
 }
 
 .day-group {
@@ -98,7 +102,7 @@ main {
 
 .day-title {
   font-size: 14px;
-  color: #9ca3af;
+  color: #475569;
   margin: 0 0 8px 4px;
   font-weight: 600;
 }
@@ -107,9 +111,11 @@ main {
   list-style: none;
   margin: 0;
   padding: 0;
-  background: #1f2937;
+  background: #ffffff;
+  border: 1px solid #dbeafe;
   border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.08);
 }
 
 .entry {
@@ -117,7 +123,7 @@ main {
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  border-bottom: 1px solid #374151;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .entry:last-child {
@@ -133,17 +139,18 @@ main {
 .entry-exercise {
   font-size: 16px;
   font-weight: 600;
+  color: #1e293b;
 }
 
 .entry-detail {
   font-size: 14px;
-  color: #9ca3af;
+  color: #2563eb;
 }
 
 .btn-delete {
   background: none;
   border: none;
-  color: #6b7280;
+  color: #94a3b8;
   font-size: 20px;
   line-height: 1;
   padding: 4px 8px;
@@ -152,6 +159,6 @@ main {
 
 .empty-message {
   text-align: center;
-  color: #6b7280;
+  color: #64748b;
   padding: 40px 0;
 }
